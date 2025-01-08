@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azhagiii's Special Day ❤️</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Short+Stack&family=Homemade+Apple&display=swap">
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <!-- Welcome Page -->
+    <div class="welcome-page">
+        <div class="image-rotator">
+            <img src="images/bdwc1.png" alt="Image 1" class="rotating-image">
+            <img src="images/bdwc4.jpg" alt="Image 2" class="rotating-image">
+            <img src="images/bdwc5.jpg" alt="Image 3" class="rotating-image">
+            <img src="images/bdwc2.png" alt="Image 4" class="rotating-image">
+            <img src="images/bdwc6.jpg" alt="Image 5" class="rotating-image">
+            <img src="images/bdwc7.jpg" alt="Image 6" class="rotating-image">
+            <img src="images/bdwc3.png" alt="Image 7" class="rotating-image">
+        </div>
+        <button class="next-page-button" id="to-second-page">🎈 click here 🎈</button>
+    </div>
+
+    <!-- Celebration Page -->
+    <div class="celebration-page" style="display: none;">
+        <div class="papers-container">
+            <div class="paper heart"></div>
+
+            <div class="paper image">
+                <p>You’re the reason I</p>
+                <p>believe magic is real🧚🏻‍♀️</p>
+                <img src="images/1.jpg" alt="Image 1">
+            </div>
+
+            <div class="paper image">
+                <p>Every time I see you,</p>
+                <p>my heart skips a beat🫀</p>
+                <img src="images/2.jpg" alt="Image 2">
+            </div>
+
+            <div class="paper image">
+                <p>How can someone</p>
+                <p>be so cute❤️</p>
+                <img src="images/3.jpg" alt="Image 3">
+            </div>
+
+            <div class="paper image">
+                <p>You brighten every room</p>
+                <p>you walk into🌝</p>
+                <img src="images/4.jpg" alt="Image 4">
+            </div>
+
+            <div class="paper image">
+                <p>Smile like sunshine</p>
+                <p>on a rainy day✨</p>
+                <img src="images/5.jpg" alt="Image 5">
+            </div>
+
+            <div class="paper image">
+                <p>You’re my favorite</p>
+                <p>kind of distraction💫</p>
+                <img src="images/6.jpg" alt="Image 6">
+            </div>
+
+            <div class="paper">
+                <p class="p1">Tap & drag the paper to see</p>
+                <p class="p1">How sweet you are🤌!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Element -->
+    <audio id="azhagiye-audio" src="Azhagiye.mp3" preload="auto"></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // ========== Welcome Page Logic ==========
+            const images = document.querySelectorAll('.rotating-image');
+            const toSecondPageButton = document.getElementById('to-second-page');
+            let currentIndex = 0;
+
+            // Function to rotate images
+            const rotateImages = () => {
+                images.forEach((img, index) => {
+                    img.classList.toggle('visible', index === currentIndex);
+                });
+                currentIndex = (currentIndex + 1) % images.length; // Move to the next image
+            };
+
+            // Start rotating images if images exist
+            if (images.length > 0) {
+                setInterval(rotateImages, 2000); // Rotate every 2 seconds for a faster start
+            }
+
+            // Navigate to the second page
+            if (toSecondPageButton) {
+                toSecondPageButton.addEventListener('click', () => {
+                    document.querySelector('.welcome-page').style.display = 'none';
+                    document.querySelector('.celebration-page').style.display = 'block';
+                });
+            }
+
+            // ========== Paper Page Logic ==========
+            let highestZIndex = 1;
+
+            class DraggablePaper {
+                constructor(paperElement) {
+                    this.paperElement = paperElement;
+                    this.isDragging = false;
+                    this.offsetX = 0;
+                    this.offsetY = 0;
+                    this.pinned = false;
+                    this.pinEmoji = null;
+                    this.init();
+                }
+
+                init() {
+                    const rotation = Math.random() * 30 - 15; // Random rotation between -15 to 15 degrees
+                    this.paperElement.style.transform = `rotate(${rotation}deg)`;
+
+                    this.paperElement.addEventListener('mousedown', (e) => this.onMouseDown(e));
+                    document.addEventListener('mousemove', (e) => this.onMouseMove(e));
+                    document.addEventListener('mouseup', () => this.onMouseUp());
+                }
+
+                onMouseDown(e) {
+                    if (!this.pinned || e.target !== this.pinEmoji) {
+                        this.startDrag(e.clientX, e.clientY);
+                        this.bringToFront();
+                    }
+                }
+
+                onMouseMove(e) {
+                    if (this.isDragging) {
+                        this.drag(e.clientX, e.clientY);
+                    }
+                }
+
+                onMouseUp() {
+                    if (this.isDragging) {
+                        this.stopDrag();
+                        this.pinPaper();
+                    }
+                }
+
+                startDrag(x, y) {
+                    this.isDragging = true;
+                    this.offsetX = x - this.paperElement.offsetLeft;
+                    this.offsetY = y - this.paperElement.offsetTop;
+                    this.paperElement.style.cursor = 'grabbing';
+                }
+
+                drag(x, y) {
+                    this.paperElement.style.left = `${x - this.offsetX}px`;
+                    this.paperElement.style.top = `${y - this.offsetY}px`;
+                }
+
+                stopDrag() {
+                    this.isDragging = false;
+                    this.paperElement.style.cursor = 'grab';
+                }
+
+                bringToFront() {
+                    this.paperElement.style.zIndex = highestZIndex++;
+                }
+
+                pinPaper() {
+                    // Check if it's the specific "drag" paper
+                    if (this.paperElement.querySelector('.p1')) {
+                        // Only play the song if it's the "drag" paper
+                        if (!this.pinned) {
+                            this.pinned = true;
+
+                            this.pinEmoji = document.createElement('div');
+                            this.pinEmoji.textContent = '📌';
+                            this.pinEmoji.style.position = 'absolute';
+                            this.pinEmoji.style.top = '10px';
+                            this.pinEmoji.style.left = '50%';
+                            this.pinEmoji.style.transform = 'translateX(-50%)';
+                            this.pinEmoji.style.fontSize = '20px';
+                            this.pinEmoji.style.cursor = 'pointer';
+
+                            this.pinEmoji.addEventListener('click', () => this.togglePin());
+                            this.paperElement.appendChild(this.pinEmoji);
+
+                            // Play the song when the paper is pinned, starting from 26 seconds
+                            const audio = document.getElementById('azhagiye-audio');
+                            if (audio) {
+                                audio.currentTime = 26; // Start at 26 seconds
+                                audio.play();
+
+                                // Stop after 1:40 (100 seconds total, so 74 seconds after 26)
+                                setTimeout(() => {
+                                    audio.pause();
+                                }, 74000); // 74 seconds playback
+                            }
+                        }
+                    }
+                }
+
+                togglePin() {
+                    this.pinned = !this.pinned;
+
+                    if (!this.pinned && this.pinEmoji) {
+                        this.paperElement.removeChild(this.pinEmoji);
+                        this.pinEmoji = null;
+                    }
+                }
+            }
+
+            const papers = document.querySelectorAll('.paper');
+            papers.forEach((paper) => {
+                paper.style.position = 'absolute';
+                new DraggablePaper(paper);
+            });
+        });
+    </script>
+</body>
+
+</html>
